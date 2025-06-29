@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "*.gd": "gdscript",
+        "*.cs": "csharp"
+    },
+    "editor.insertSpaces": false,
+    "editor.detectIndentation": false,
+    "editor.tabSize": 4,
+    "[gdscript]": {
+        "editor.insertSpaces": false,
+        "editor.tabSize": 4,
+        "editor.detectIndentation": false,
+        "editor.useTabStops": true
+    },
+    "godot_tools.gdscript_lsp_server_enabled": true,
+    "godot_tools.editor_path": ""
+}
