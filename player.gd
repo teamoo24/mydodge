@@ -1,17 +1,26 @@
-extends Area2D  # プレイヤーキャラクターの基本ノード。2D空間での当たり判定を管理。
-signal hit  # プレイヤーが何かに当たったときに発信されるシグナル。
+# プレイヤーキャラクターの基本ノード。2D空間での当たり判定を管理。
+extends Area2D
 
-@export var speed: float = 400  # プレイヤーの移動速度（エディタから変更可能）。
-var screen_size  # 画面サイズを保存する変数。
+# プレイヤーが何かに当たったときに発信されるシグナル。
+signal hit
 
+# プレイヤーの移動速度（エディタから変更可能）。
+@export var speed: float = 400
+
+# 画面サイズを保存する変数。
+var screen_size
+
+# ノードがシーンに追加されたときに呼ばれる初期化関数。
 func _ready():
-	screen_size = get_viewport().size  # ゲーム画面のサイズを取得。
-	# ノードがシーンに追加されたときに呼ばれる初期化関数。
-	hide()  # プレイヤーを非表示にする。ゲーム開始時は見えないようにする。
+	# ゲーム画面のサイズを取得。
+	screen_size = get_viewport().size
+	# プレイヤーを非表示にする。ゲーム開始時は見えないようにする。
+	hide()
 
+# 毎フレーム呼ばれる関数。プレイヤーの状態を更新する。
 func _process(delta):
-	# 毎フレーム呼ばれる関数。プレイヤーの状態を更新する。
-	var velocity = Vector2.ZERO  # プレイヤーの移動速度ベクトル（初期化）。
+	# プレイヤーの移動速度ベクトル（初期化）。
+	var velocity = Vector2.ZERO
 
 	# 入力に応じて移動方向を決定。
 	if Input.is_action_pressed("move_right"):
@@ -26,31 +35,44 @@ func _process(delta):
 	if velocity.length() > 0:
 		# ベクトルの正規化と速度の適用
 		velocity = velocity.normalized() * speed
-		$AnimatedSprite2D.play()  # アニメーション再生
+		# アニメーション再生
+		$AnimatedSprite2D.play()
 	else:
-		$AnimatedSprite2D.stop()  # 移動していない時はアニメーション停止
+		# 移動していない時はアニメーション停止
+		$AnimatedSprite2D.stop()
 
 	# 実際にプレイヤーを移動させる
 	position += velocity * delta
-	position.x = clamp(position.x, 0, screen_size.x)  # 画面の端を超えないようにする
+	# 画面の端を超えないようにする
+	position.x = clamp(position.x, 0, screen_size.x)
 
 	# アニメーションの切り替えと向きの調整
 	if velocity.x != 0:
-		$AnimatedSprite2D.animation = "walk"  # 横移動アニメーション
+		# 横移動アニメーション
+		$AnimatedSprite2D.animation = "walk"
 		$AnimatedSprite2D.flip_v = false
-		$AnimatedSprite2D.flip_h = velocity.x < 0  # 左に移動なら反転
+		# 左に移動なら反転
+		$AnimatedSprite2D.flip_h = velocity.x < 0
 	elif velocity.y != 0:
-		$AnimatedSprite2D.animation = "up"  # 縦移動アニメーション
-		$AnimatedSprite2D.flip_v = velocity.y > 0  # 下に移動なら上下反転
+		# 縦移動アニメーション
+		$AnimatedSprite2D.animation = "up"
+		# 下に移動なら上下反転
+		$AnimatedSprite2D.flip_v = velocity.y > 0
 
+# プレイヤーが他の物体（敵や障害物など）と接触したときに呼ばれる
 func _on_body_entered(_body):
-	# プレイヤーが他の物体（敵や障害物など）と接触したときに呼ばれる
-	hide()  # プレイヤーを非表示に
-	hit.emit()  # シグナル発信（例：ライフ減少などに利用）
-	$CollisionShape2D.set_deferred("disabled", true)  # 当たり判定を無効化
+	# プレイヤーを非表示に
+	hide()
+	# シグナル発信（例：ライフ減少などに利用）
+	hit.emit()
+	# 当たり判定を無効化
+	$CollisionShape2D.set_deferred("disabled", true)
 
+# プレイヤーを指定位置に表示してゲームを開始する
 func start(pos):
-	# プレイヤーを指定位置に表示してゲームを開始する
-	position = pos  # 指定された位置に移動
-	show()  # プレイヤーを表示
-	$CollisionShape2D.disabled = false  # 当たり判定を有効化
+	# 指定された位置に移動
+	position = pos
+	# プレイヤーを表示
+	show()
+	# 当たり判定を有効化
+	$CollisionShape2D.disabled = false
